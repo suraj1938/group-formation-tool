@@ -1,0 +1,12 @@
+DELIMITER $$
+DROP PROCEDURE IF EXISTS spGetAllSurveyQuestionBySurveyID $$
+CREATE PROCEDURE `spGetAllSurveyQuestionBySurveyID`( IN surveyID INT )
+BEGIN
+	SELECT table_question.*
+    FROM table_question
+    JOIN table_survey_questions_mapper ON  table_survey_questions_mapper.question_id = table_question.id
+    WHERE table_survey_questions_mapper.survey_id = surveyID
+    ORDER BY table_survey_questions_mapper.questionOrder;
+END$$
+DELIMITER ;
+

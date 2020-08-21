@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" th:href="@{/vendor/fontawesome-free/css/all.min.css}" type="text/css">
+    <link
+            href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+            rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link rel="stylesheet" th:href="@{/css/sb-admin-2.min.css}">
+
+</head>
+<body id="page-top">
+<div id="wrapper">
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <!-- Sidebar - Brand -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+            <div class="sidebar-brand-icon rotate-n-15">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3">CSCI-5308 <sup>2</sup></div>
+        </a>
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+        <!-- Nav Item - Dashboard -->
+        <li class="nav-item active">
+            <a class="nav-link" href="home">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Dashboard</span></a>
+        </li>
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+        <li class="nav-item">
+            <a class="nav-link" href="/logout">
+                <i class="fas fa-fw fa-sign-out-alt"></i>
+                <span>Logout</span></a>
+        </li>
+
+        <!-- Sidebar Toggler (Sidebar) -->
+        <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+    </ul>
+    <div class="d-flex flex-column" id="content-wrapper">
+        <div id="content">
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                <!-- Sidebar Toggle (Topbar) -->
+                <button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop">
+                    <i class="fa fa-bars"></i>
+                </button>
+
+                <!-- Nav Item - Alerts -->
+                <ul class="navbar-nav ml-auto">
+
+                    <div class="topbar-divider d-none d-sm-block"></div>
+
+                    <!-- Nav Item - User Information -->
+                    <li class="nav-item dropdown no-arrow">
+                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
+                           data-toggle="dropdown"
+                           href="#"
+                           id="userDropdown" role="button">
+							<span class="mr-2 d-none d-lg-inline text-gray-600 small"
+                                  th:text='${user.getFirstName() + " " + user.getLastName()}'></span>
+                            <i class="fa fa-user-circle"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="container-fluid">
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">Survey</h1>
+                </div>
+                <form id="addOptions" method="post" th:action="@{/student/survey/submit}"
+                      th:object="${SurveyFromResponse}">
+
+
+                    <div th:each="tx, op: *{surveyResponse}">
+
+                        <label th:text="*{surveyResponse[__${op.index}__].questionTitle}"></label>
+                        <br/>
+
+                        <label th:text="*{surveyResponse[__${op.index}__].questionText}"></label>
+                        <br/>
+
+                        <div th:if="*{surveyResponse[__${op.index}__].questionTypeId} ==1">
+                            <input class="form-control" name="answer"
+                                   size="2"
+                                   style="width:200px" th:field="*{surveyResponse[__${op.index}__].numericResponse}"
+                                   required
+                                   type="number">
+                        </div>
+
+                        <div th:if="*{surveyResponse[__${op.index}__].questionTypeId}==2">
+                            <label>Select one answer :
+                                <select class="form-control" name="type"
+                                        th:field="*{surveyResponse[__${op.index}__].choiceId}">
+                                    <option value="0">select answer</option>
+                                    <option th:each="option, i : *{surveyResponse[__${op.index}__].options}"
+                                            th:text="${option.getOption()}"
+                                            th:value="${option.getId()}"
+                                    >
+                                    </option>
+                                </select>
+                            </label>
+                        </div>
+                        <div th:if="*{surveyResponse[__${op.index}__].questionTypeId}==3">
+                            <div th:each="opt : *{surveyResponse[__${op.index}__].options}">
+                                <input th:checked="${opt.isSelected}"
+                                       th:field="*{surveyResponse[__${op.index}__].choiceId}"
+                                       th:value="${opt.getId()}"
+                                       type="checkbox"
+                                />
+                                <label th:text="${opt.option}"></label>
+                            </div>
+                        </div>
+
+                        <div th:if="*{surveyResponse[__${op.index}__].questionTypeId}==4">
+                            <textarea cols="50" id="freeText" rows="4"
+                                      required
+                                      th:field="*{surveyResponse[__${op.index}__].textResponse}"></textarea>
+                        </div>
+
+                        <br/>
+                        <input name="ID" th:field="*{surveyResponse[__${op.index}__].questionId}"
+                               th:value="*{surveyResponse[__${op.index}__].getQuestionId()}" type="hidden">
+                        <input name="TYPE_ID" th:field="*{surveyResponse[__${op.index}__].questionTypeId}"
+                               th:value="*{surveyResponse[__${op.index}__].getQuestionTypeId()}" type="hidden">
+                        <input name="QST_TEXT" th:field="*{surveyResponse[__${op.index}__].questionInstructorId}"
+                               th:value="*{surveyResponse[__${op.index}__].getQuestionInstructorId()}" type="hidden">
+                        <input name="QST_TITLE" th:field="*{surveyResponse[__${op.index}__].questionTitle}"
+                               th:value="*{surveyResponse[__${op.index}__].getQuestionTitle()}" type="hidden">
+                        <input name="QST_TITLE" th:field="${SurveyFromResponse.surveyId}"
+                               th:value="${SurveyFromResponse.surveyId}" type="hidden">
+                    </div>
+                    <hr>
+                    <input class="btn btn-outline-primary" id="addQuestion" style="margin-top: 10px" type="submit"
+                           value="Save">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Core plugin JavaScript-->
+<script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
+
+<!-- Custom scripts for all pages-->
+<script th:src="@{/js/sb-admin-2.min.js}"></script>
+</body>
+</html>

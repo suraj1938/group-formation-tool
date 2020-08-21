@@ -1,0 +1,9 @@
+DELIMITER $$
+DROP PROCEDURE IF EXISTS spGetSurvey $$
+CREATE PROCEDURE `spGetSurvey`( IN surveyID INT )
+BEGIN
+	SELECT *
+	FROM table_survey
+	WHERE id = surveyID;
+END$$
+DELIMITER ;
